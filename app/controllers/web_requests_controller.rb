@@ -24,19 +24,24 @@ class WebRequestsController < ApplicationController
     if user
       agent = user.agents.find_by_id(params[:agent_id])
       if agent
-        content, status, content_type = agent.trigger_web_request(params.except(:action, :controller, :agent_id, :user_id, :format), request.method_symbol.to_s, request.format.to_s)
-        if content.is_a?(String)
-          render :text => content, :status => status || 200, :content_type => content_type || 'text/plain'
+        content, status, content_type = agent.trigger_web_request(request)
+
+        status = status || 200
+
+        if status.to_s.in?(["301", "302"])
+          redirect_to content, status: status
+        elsif content.is_a?(String)
+          render plain: content, :status => status, :content_type => content_type || 'text/plain'
         elsif content.is_a?(Hash)
-          render :json => content, :status => status || 200
+          render :json => content, :status => status
         else
-          head(status || 200)
+          head(status)
         end
       else
-        render :text => "agent not found", :status => 404
+        render plain: "agent not found", :status => 404
       end
     else
-      render :text => "user not found", :status => 404
+      render plain: "user not found", :status => 404
     end
   end
 
@@ -46,12 +51,12 @@ class WebRequestsController < ApplicationController
       secret = params[:secret]
       user.agents.of_type(Agents::UserLocationAgent).each { |agent|
         if agent.options[:secret] == secret
-          agent.trigger_web_request(params.except(:action, :controller, :user_id, :format), request.method_symbol.to_s, request.format.to_s)
+          agent.trigger_web_request(request)
         end
       }
-      render :text => "ok"
+      render plain: "ok"
     else
-      render :text => "user not found", :status => :not_found
+      render plain: "user not found", :status => :not_found
     end
   end
 end

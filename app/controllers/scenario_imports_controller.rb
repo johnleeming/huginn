@@ -4,17 +4,22 @@ class ScenarioImportsController < ApplicationController
   end
 
   def create
-    @scenario_import = ScenarioImport.new(params[:scenario_import])
+    @scenario_import = ScenarioImport.new(scenario_import_params)
     @scenario_import.set_user(current_user)
 
-    if @scenario_import.will_request_local?(scenarios_url)
-      render :text => 'Sorry, you cannot import a Scenario by URL from your own Huginn server.' and return
-    end
-
-    if @scenario_import.valid? && @scenario_import.should_import? && @scenario_import.import
+    if @scenario_import.valid? && @scenario_import.import_confirmed? && @scenario_import.import
       redirect_to @scenario_import.scenario, notice: "Import successful!"
     else
       render action: "new"
+    end
+  end
+
+  private
+
+  def scenario_import_params
+    merges = params[:scenario_import].delete(:merges).try(:permit!)
+    params.require(:scenario_import).permit(:url, :data, :file, :do_import).tap do |params|
+      params[:merges] = merges
     end
   end
 end

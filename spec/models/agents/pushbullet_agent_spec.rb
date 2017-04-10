@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe Agents::PushbulletAgent do
   before(:each) do
@@ -93,7 +93,7 @@ describe Agents::PushbulletAgent do
   describe '#complete_device_id' do
     it "should return an array" do
       mock(@checker).devices { [{'iden' => '12345', 'nickname' => 'huginn'}] }
-      expect(@checker.complete_device_id).to eq([{:text=>"huginn", :id=>"12345"}])
+      expect(@checker.complete_device_id).to eq([{:text=>"All Devices", :id=>"__ALL__"}, {:text=>"huginn", :id=>"12345"}])
     end
   end
 

@@ -28,6 +28,9 @@ body { padding-top: 60px; }
 }
 
 .well.description {
+  table {
+    @extend .table;
+  }
   h1 { font-size: 30px; }
   h2 { font-size: 26px; }
   h3 { font-size: 22px; }
@@ -92,6 +95,11 @@ img.odin {
 span.not-applicable:after {
   color: #bbbbbb;
   content: "n/a";
+}
+
+// Dry Run Results Tabs
+.nav.agent-dry-run-tabs {
+  margin-bottom: 20px;
 }
 
 // Navbar
@@ -264,17 +272,21 @@ h2 .scenario, a span.label.scenario {
   width: 200px;
 }
 
-$services:            twitter     37signals   github      tumblr      dropbox   wunderlist;
-$service-colors:      #55acee     #8fc857     #444444     #2c4762     #007EE5   #ED5F27;
+$service-colors: (
+  twitter:      #55acee,
+  37signals:    #8fc857,
+  github:       #444444,
+  tumblr:       #2c4762,
+  dropbox:      #007EE5,
+  wunderlist:   #ED5F27,
+  evernote:     #00C85A
+);
 
 @mixin services {
-  @each $service in $services {
-    $i: index($services, $service);
-    $service-color: nth($service-colors, $i);
-
+  @each $service, $color in $service-colors {
     &.service-#{$service} {
       color: #fff;
-      background-color: $service-color;
+      background-color: $color;
     }
   }
 }
@@ -303,4 +315,18 @@ $service-colors:      #55acee     #8fc857     #444444     #2c4762     #007EE5   
 
 .label-service {
   @include services;
+}
+
+.select2-highlighted a {
+  color: yellow;
+  text-decoration: underline;
+}
+
+.glyphicon-flipped {
+  -ms-transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -ms-transform: scaleX(-1);
+  -webkit-transform: scaleX(-1);
+  transform: scaleX(-1);
 }
